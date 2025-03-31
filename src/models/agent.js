@@ -19,6 +19,14 @@ const AgentSchema = new mongoose.Schema(
             supportingDocument:{type:String},//url
 
          },
+         purchasePlan:{type:String,default:"Basic"},
+         dateOfPurchasePlan:{type:String,default:"15/03/2025"},
+         paymentMethod:{type:String , default:"Bank Transfer"},
+         paidAmount:{type:String,default:"1800"},
+         lastRecharge:{type:String,default:"600"},
+         unpaidAmount:{type:String,default:"0"},
+         balance:{type:String,default:"600"},
+
         status: { type: String, enum: ["pending", "approved", "rejected"], default: "pending" },
     },
     { timestamps: true }
