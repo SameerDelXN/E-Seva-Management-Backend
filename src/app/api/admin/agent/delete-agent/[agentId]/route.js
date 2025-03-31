@@ -7,7 +7,7 @@ export async function DELETE(req, { params }) {
     try {
         await dbConnect(); // Connect to MongoDB
 
-        const { agentId } = await params; // Fetch agentId from dynamic route params
+        const { agentId } = params; // Fetch agentId from dynamic route params
 
         // Validate ObjectId
         if (!mongoose.Types.ObjectId.isValid(agentId)) {
@@ -23,9 +23,31 @@ export async function DELETE(req, { params }) {
         // Delete the agent
         await Agent.findByIdAndDelete(agentId);
 
-        return NextResponse.json({ success: true, message: "Agent deleted successfully" }, { status: 200 });
+        // Enable CORS headers
+        const response = NextResponse.json(
+            { success: true, message: "Agent deleted successfully" },
+            { status: 200 }
+        );
+
+        response.headers.set("Access-Control-Allow-Origin", "*");
+        response.headers.set("Access-Control-Allow-Methods", "GET, DELETE, OPTIONS");
+        response.headers.set("Access-Control-Allow-Headers", "Content-Type");
+
+        return response;
     } catch (error) {
         console.error("Error deleting agent:", error);
         return NextResponse.json({ success: false, error: "Internal Server Error" }, { status: 500 });
     }
+}
+
+// Handle OPTIONS request for CORS
+export async function OPTIONS() {
+    return new Response(null, {
+        status: 204,
+        headers: {
+            "Access-Control-Allow-Origin": "*",
+            "Access-Control-Allow-Methods": "GET, DELETE, OPTIONS",
+            "Access-Control-Allow-Headers": "Content-Type",
+        },
+    });
 }
