@@ -56,7 +56,7 @@
 import { NextResponse } from "next/server";
 import connectDB from "@/utils/db";
 import Agent from "../../../../../models/agent";
-import bcrypt from "bcryptjs";
+// import bcrypt from "bcryptjs";
 
 // Helper function to add CORS headers to responses
 const addCorsHeaders = (response) => {
@@ -128,8 +128,8 @@ export async function POST(req) {
         }
 
         // Hash the password before saving
-        const salt = await bcrypt.genSalt(10);
-        const hashedPassword = await bcrypt.hash(password, salt);
+        // const salt = await bcrypt.genSalt(10);
+        // const hashedPassword = await bcrypt.hash(password, salt);
 
         // Create new agent
         const newAgent = new Agent({
@@ -142,7 +142,7 @@ export async function POST(req) {
             location,
             referralCode,
             username,
-            password: hashedPassword,
+            password,
             documents,
             createdAt: new Date(),
             updatedAt: new Date(),
