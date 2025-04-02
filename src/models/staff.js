@@ -11,6 +11,5 @@ const StaffSchema = new mongoose.Schema({
 
 },
 { timestamps: true }
-);
-
+)
 module.exports=mongoose.models.Staff || mongoose.model("Staff",StaffSchema);
