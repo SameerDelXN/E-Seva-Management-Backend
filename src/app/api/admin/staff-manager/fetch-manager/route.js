@@ -9,15 +9,32 @@ export async function GET() {
         // Fetch all managers
         const managers = await StaffManager.find();
 
-        return NextResponse.json(
-            { success: true, managers },
-            { status: 200 }
+        return addCorsHeaders(
+            NextResponse.json(
+                { success: true, managers },
+                { status: 200 }
+            )
         );
     } catch (error) {
         console.error("Error fetching managers:", error);
-        return NextResponse.json(
-            { success: false, error: "Internal Server Error" },
-            { status: 500 }
+        return addCorsHeaders(
+            NextResponse.json(
+                { success: false, error: "Internal Server Error" },
+                { status: 500 }
+            )
         );
     }
+}
+
+// Middleware function to add CORS headers
+function addCorsHeaders(response) {
+    response.headers.set("Access-Control-Allow-Origin", "*");
+    response.headers.set("Access-Control-Allow-Methods", "GET, OPTIONS");
+    response.headers.set("Access-Control-Allow-Headers", "Content-Type, Authorization");
+    return response;
+}
+
+// Handle preflight requests (OPTIONS method)
+export async function OPTIONS() {
+    return addCorsHeaders(new NextResponse(null, { status: 204 }));
 }
