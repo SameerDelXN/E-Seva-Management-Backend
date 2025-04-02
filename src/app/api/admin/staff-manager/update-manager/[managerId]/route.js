@@ -3,14 +3,18 @@ import StaffManager from "@/models/staffManager";
 import bcrypt from "bcryptjs";
 import { NextResponse } from "next/server";
 
+const corsHeaders = {
+    "Access-Control-Allow-Origin": "*",  // Allow all domains (or specify frontend domain)
+    "Access-Control-Allow-Methods": "GET, POST, PATCH, PUT, DELETE, OPTIONS",
+    "Access-Control-Allow-Headers": "Content-Type, Authorization",
+};
+
 export async function PATCH(req, { params }) {
     try {
         await connectDB();
 
-       
-
         // Extract managerId
-        const { managerId } = await params;
+        const { managerId } = params;
 
         // Parse request body
         const updatedData = await req.json();
@@ -24,27 +28,32 @@ export async function PATCH(req, { params }) {
         const manager = await StaffManager.findByIdAndUpdate(
             managerId,
             updatedData,
-            { new: true, runValidators: true } // Return updated manager & validate fields
+            { new: true, runValidators: true }
         );
 
         // If manager not found
         if (!manager) {
             return NextResponse.json(
                 { success: false, message: "Manager not found" },
-                { status: 404 }
+                { status: 404, headers: corsHeaders }
             );
         }
 
-        // Return updated manager
+        // Return updated manager with CORS headers
         return NextResponse.json(
             { success: true, message: "Manager updated successfully", manager },
-            { status: 200 }
+            { status: 200, headers: corsHeaders }
         );
     } catch (error) {
         console.error("Error updating manager:", error);
         return NextResponse.json(
             { success: false, error: "Internal Server Error" },
-            { status: 500 }
+            { status: 500, headers: corsHeaders }
         );
     }
+}
+
+// ✅ Handle OPTIONS Preflight Request
+export async function OPTIONS() {
+    return NextResponse.json({}, { status: 200, headers: corsHeaders });
 }
