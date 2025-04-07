@@ -12,7 +12,7 @@ const appointmentSchema = {
     enum: ['E-Seva Kendra', 'RTO Services', 'CA Services', 'Legal Services', 'Banking Services', 'Online Form Filling', 'Quick Services']
   },
   price: {
-    type: Number,
+    type: String,
     required: true
   },
   duration: {
