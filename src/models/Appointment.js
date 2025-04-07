@@ -1,7 +1,7 @@
 import mongoose from 'mongoose';
 
 const appointmentSchema = {
-  // Service Details
+  
   serviceName: {
     type: String,
     required: true
@@ -22,18 +22,14 @@ const appointmentSchema = {
 
   // Date and Time
   appointmentDate: {
-    type: Date,
+    type: String,
     required: true
   },
   timeSlot: {
     type: String,
     required: true
   },
-  slotType: {
-    type: String,
-    enum: ['Morning', 'Afternoon', 'Evening'],
-    required: true
-  },
+ 
 
   // Basic Details
   fullName: {
@@ -43,12 +39,12 @@ const appointmentSchema = {
   email: {
     type: String,
     required: true,
-    match: [/^\w+([\.-]?\w+)*@\w+([\.-]?\w+)*(\.\w{2,3})+$/, 'Please provide a valid email']
+   
   },
   phone: {
     type: String,
     required: true,
-    match: [/^[0-9]{10}$/, 'Please provide a valid 10-digit phone number']
+   
   },
   city: {
     type: String,
