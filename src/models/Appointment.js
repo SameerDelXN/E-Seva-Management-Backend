@@ -58,7 +58,7 @@ const appointmentSchema = {
   // Status and Tracking
   status: {
     type: String,
-    enum: ['Pending', 'Confirmed', 'Completed', 'Cancelled'],
+ 
     default: 'Pending'
   },
  
