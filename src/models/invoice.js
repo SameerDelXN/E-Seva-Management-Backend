@@ -31,11 +31,13 @@
 const mongoose = require('mongoose');
 
 const InvoiceItemSchema = new mongoose.Schema({
-  itemName: { type: String, required: true },
+  name: { type: String, required: true },
   basePrice: { type: Number, required: true, default: 0 },
   commission: { type: Number, required: true, default: 0 },
   tax: { type: Number, required: true, default: 0 }, // Tax in percentage
-  qty: { type: Number, required: true, default: 1 }
+  quantity: { type: Number, required: true, default: 1 },
+  subtotal: { type: Number, required: true, default: 0 },
+  total:{type:String,required:true}
 });
 
 const InvoiceSchema = new mongoose.Schema({
@@ -50,7 +52,7 @@ const InvoiceSchema = new mongoose.Schema({
     validate: [(val) => val.length > 0, 'Invoice must have at least one item']
   },
 
-  subtotal: { type: Number, required: true, default: 0 },
+ 
   totalCommission: { type: Number, required: true, default: 0 },
   totalTax: { type: Number, required: true, default: 0 },
   grandTotal: { type: Number, required: true, default: 0 },

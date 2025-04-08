@@ -50,13 +50,13 @@ export function OPTIONS() {
 }
 
 // GET /api/get-bill/:id
-export async function GET(req, { params }) {
-  const { id } = params;
+export async function GET() {
+
 
   try {
     await dbConnect();
 
-    const invoice = await Invoice.findById(id);
+    const invoice = await Invoice.find({});
 
     if (!invoice) {
       return setCorsHeaders(NextResponse.json({ message: 'Invoice not found' }, { status: 404 }));
