@@ -106,6 +106,7 @@ export async function POST(req) {
             username,
             password,
             documents,
+            status
         } = requestData;
 
         // Check if agent already exists
@@ -144,6 +145,7 @@ export async function POST(req) {
             username,
             password,
             documents,
+            status,
             createdAt: new Date(),
             updatedAt: new Date(),
         });

@@ -27,7 +27,7 @@ const AgentSchema = new mongoose.Schema(
          unpaidAmount:{type:String,default:"0.00"},
          balance:{type:String,default:"0.00"},
 
-        status: { type: String, enum: ["pending", "approved", "rejected"], default: "pending" },
+        status: { type: String,  default: "pending" },
     },
     { timestamps: true }
 );
