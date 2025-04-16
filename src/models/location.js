@@ -5,12 +5,12 @@ const locationSchema = new mongoose.Schema({
   district: {
     type: String,
     required: true,
-    trim: true,
+    
   },
   state: {
     type: String,
     required: true,
-    trim: true,
+  
   },
 }, {
   timestamps: true,
