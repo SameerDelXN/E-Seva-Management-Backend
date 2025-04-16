@@ -43,12 +43,18 @@ export async function GET(req) {
       createdAt: app.createdAt
     }));
     
-    return NextResponse.json({
-      message: "Applications retrieved successfully", 
-      data: formattedApplications,
-      status: 200
-    }, { status: 200 });
-    
+     
+    const response = NextResponse.json({
+        message: "Applications retrieved successfully", 
+        data: formattedApplications,
+        status: 200
+      }, { status: 200 });
+  
+    response.headers.set('Access-Control-Allow-Origin', '*');
+    response.headers.set('Access-Control-Allow-Methods', 'POST, OPTIONS');
+    response.headers.set('Access-Control-Allow-Headers', 'Content-Type');
+
+    return response;
   } catch (error) {
     console.error("Error fetching applications:", error);
     return NextResponse.json({
