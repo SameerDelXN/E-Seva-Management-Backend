@@ -30,16 +30,65 @@
                     |-- update-agent
                         |-- [agentId]
                             |-- route.js
+                |-- appointments
+                    |-- add-appointment
+                        |-- route.js
+                    |-- delete-appointment
+                        |-- [Id]
+                            |-- route.js
+                    |-- fetch-appointments
+                        |-- route.js
+                    |-- fetch-pending-appointments
+                        |-- route.js
+                    |-- update-appointments
+                        |-- [Id]
+                            |-- route.js
                 |-- auth
                     |-- signin
                         |-- route.js
                     |-- signup
                         |-- route.js
+                |-- Bills
+                    |-- create-bill
+                        |-- route.js
+                    |-- delete-bill
+                        |-- [id]
+                            |-- route.js
+                    |-- fetch-bill
+                        |-- route.js
+                    |-- update-bill
+                        |-- [id]
+                            |-- route.js
                 |-- field-boy
                     |-- fetch-fieldboys
                         |-- route.js
                     |-- register-fieldboy
                         |-- route.js
+                |-- manage-plan
+                    |-- add-plan
+                        |-- route.js
+                    |-- delete-plan
+                        |-- [Id]
+                            |-- route.js
+                    |-- fetch-plans
+                        |-- route.js
+                    |-- update-plan
+                        |-- [Id]
+                            |-- route.js
+                |-- serviceGroup
+                    |-- add-serviceGroups
+                        |-- route.js
+                    |-- deleteServiceGroup
+                        |-- [id]
+                            |-- route.js
+                    |-- getAll-Groups
+                        |-- route.js
+                    |-- manage-services
+                        |-- addService
+                            |-- route.js
+                    |-- update-Group
+                        |-- [id]
+                            |-- route.js
                 |-- staff
                     |-- add-staff
                         |-- route.js
@@ -68,13 +117,21 @@
                     |-- update-manager
                         |-- [managerId]
                             |-- route.js
+            |-- application
+                |-- fetchAll
+                    |-- route.js
         |-- favicon.ico
         |-- globals.css
         |-- layout.js
         |-- page.js
     |-- models
         |-- agent.js
+        |-- Appointment.js
         |-- fieldboy.js
+        |-- invoice.js
+        |-- Plans.js
+        |-- service.js
+        |-- ServiceGroup.js
         |-- staff.js
         |-- staffManager.js
         |-- User.js
