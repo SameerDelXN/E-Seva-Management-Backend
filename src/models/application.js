@@ -32,6 +32,7 @@
 // export default Application;
 const applicationSchema = new mongoose.Schema({
   name: { type: String, required: true },
+  phone:{type:Number},
   provider: { type: String, required: true },
   date: { type: Date },
   delivery: { type: String },
@@ -68,7 +69,7 @@ const applicationSchema = new mongoose.Schema({
     updatedBy: { type: String } // Track who changed the status
   }],
   
-  staff: { type: String, required: true },
+  staff: { type: String },
   amount: { type: Number, required: true },
   document: [{ type: String, default: null }],
   receipt: [{ type: String, default: null }]

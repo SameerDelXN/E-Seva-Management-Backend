@@ -61,27 +61,27 @@ export async function POST(request) {
   try {
     await dbConnect();
     const body = await request.json();
-    
+    console.log(body)
     // Validate required fields
-    if (!body.name || !body.provider || !body.staff || !body.amount || !body.serviceId) {
-      return new NextResponse(
-        JSON.stringify({ message: 'Missing required fields' }),
-        {
-          status: 400,
-          headers: {
-            'Access-Control-Allow-Origin': '*',
-            'Access-Control-Allow-Methods': 'GET, POST, PUT, DELETE, OPTIONS',
-            'Access-Control-Allow-Headers': 'Content-Type, Authorization',
-            'Content-Type': 'application/json',
-          },
-        }
-      );
-    }
-
+    // if (!body.name || !body.provider || !body.staff || !body.amount || !body.serviceId) {
+    //   return new NextResponse(
+    //     JSON.stringify({ message: 'Missing required fields' }),
+    //     {
+    //       status: 400,
+    //       headers: {
+    //         'Access-Control-Allow-Origin': '*',
+    //         'Access-Control-Allow-Methods': 'GET, POST, PUT, DELETE, OPTIONS',
+    //         'Access-Control-Allow-Headers': 'Content-Type, Authorization',
+    //         'Content-Type': 'application/json',
+    //       },
+    //     }
+    //   );
+    // }
+// console.log(body);
     // Find the service by ID to get its status
-    const serviceId = body.serviceId;
+    const serviceId = body.service._id;
     const service = await NewService.findById(serviceId);
-    
+    console.log(service);
     if (!service) {
       return new NextResponse(
         JSON.stringify({ message: 'Service not found' }),
@@ -121,6 +121,7 @@ export async function POST(request) {
     const newApplication = new Application({
       name: body.name,
       provider: body.provider,
+      phone:body.phone,
       date: body.date || new Date(),
       delivery: body.delivery,
       staff: body.staff,
