@@ -1,0 +1,36 @@
+// File: models/Notification.js
+import mongoose from 'mongoose';
+
+const NotificationSchema = new mongoose.Schema({
+  title: {
+    type: String,
+    required: true,
+  },
+  message: {
+    type: String,
+    required: true,
+  },
+  recipientId: {
+    type: String,
+    // Not required if sending to a role
+  },
+  recipientRole: {
+    type: String,
+    enum: ['agent', 'admin', 'staff', 'staff-manager'],
+    // Not required if sending to specific user
+  },
+  read: {
+    type: Boolean,
+    default: false,
+  },
+  playSound: {
+    type: Boolean,
+    default: false,
+  },
+  createdAt: {
+    type: Date,
+    default: Date.now,
+  },
+});
+
+export default mongoose.models.Notification || mongoose.model('Notification', NotificationSchema);
