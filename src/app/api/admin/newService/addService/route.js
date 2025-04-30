@@ -23,7 +23,7 @@ export async function POST(request) {
   try {
     await dbConnect();
     const body = await request.json();
-    
+    console.log("body",body.planPrices[0].plans);
     // Validate required fields
     if (!body.name || !body.document) {
       return new NextResponse(
@@ -90,12 +90,13 @@ export async function POST(request) {
 
     // Save to database
     const savedService = await newService.save();
-
+    console.log("data",savedService.planPrices[0]);
     // Create a new service object for the service group
     // Explicitly use the service ID string to ensure it's stored correctly
     const serviceForGroup = {
       serviceId: savedService._id.toString(),  // Store as string to preserve exact ID
       name: savedService.name,
+      price:savedService.price,
       documentNames: savedService.document,
       planPrices: savedService.planPrices || []
     };

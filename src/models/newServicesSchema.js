@@ -15,10 +15,12 @@ const newServicesSchema = new mongoose.Schema({
   // Prices for each plan in each location
   planPrices: [
     {
-      location: { type: mongoose.Schema.Types.ObjectId, ref: "Location" },
+      district: { type: String, },
+      state: { type: String, },
       plans: [
         {
           plan: { type: mongoose.Schema.Types.ObjectId, ref: "Plan" },
+          planName:{type:String},
           price: { type: Number, default: 0 }
         }
       ]

@@ -4,10 +4,20 @@ const ServiceSchema = new mongoose.Schema({
     serviceId:{type:String},
     name: { type: String, unique: true },
     documentNames: [{ type: String }],
-    planPrices: [{ 
-        planName: { type: String },
-        price: { type: Number, default: 0 } 
-    }]
+    price:{type:Number},
+    planPrices: [
+        {
+          district: { type: String, },
+          state: { type: String, },
+          plans: [
+            {
+              plan: { type: mongoose.Schema.Types.ObjectId, ref: "Plan" },
+              planName:{type:String},
+              price: { type: Number, default: 0 }
+            }
+          ]
+        }
+      ],
 });
 
 const ServiceGroupSchema = new mongoose.Schema({
