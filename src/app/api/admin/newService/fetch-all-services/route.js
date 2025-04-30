@@ -45,9 +45,9 @@ export const GET = async () => {
   try {
     await dbConnect();
 
-    const servicesData = await NewService.find()
-      .populate('planPrices.location')           // ✅ Populating location name
-      .populate('planPrices.plans.plan');        // ✅ Populating plan name inside each plan
+    const servicesData = await NewService.find({});
+      // .populate('planPrices.location')           // ✅ Populating location name
+      // .populate('planPrices.plans.plan');        // ✅ Populating plan name inside each plan
 
     return new NextResponse(
       JSON.stringify({ message: 'Services fetched successfully', servicesData }),
