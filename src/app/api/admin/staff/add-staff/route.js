@@ -69,8 +69,8 @@ export async function POST(req) {
     try {
         await connectDB();
 
-        const { name, username, contactNo, location, password, ServiceGroup } = await req.json();
-
+        const { name, username, contactNo, location, password, serviceGroups  } = await req.json();
+        console.log("gr",serviceGroups );
         // Ensure unique username and contact number
         const AlreadyStaff = await Staff.findOne({ $or: [{ username }, { contactNo }] });
 
@@ -87,7 +87,7 @@ export async function POST(req) {
             contactNo,
             location,
             password: hashedPassword,  // Store hashed password
-            ServiceGroup
+            serviceGroups 
         });
 
         await newStaff.save();
