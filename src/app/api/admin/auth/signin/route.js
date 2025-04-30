@@ -4,11 +4,12 @@ import User from '@/models/User'
 import bcrypt from 'bcryptjs'
 import connectDB from '@/utils/db'
 import Agent from '@/models/agent'
+import Staff from '@/models/staff'
 
 export async function POST(request) {
   try {
     const { username, password, role } = await request.json()
-    
+    console.log(role);
     await connectDB()
     
     // Variable to store the found user
@@ -26,9 +27,24 @@ export async function POST(request) {
       if (user) {
         isPasswordValid = (password === user.password);
       }
-    } else {
+    }
+   
+    else if(role === "staff"){
+      console.log("seraching in staff");
+      user = await Staff.findOne({
+        $or: [{username:username}],
+       
+      });
+      if (user) {
+        isPasswordValid = await bcrypt.compare(password, user.password);
+      }
+      console.log(user);
+
+    } 
+    else {
+      console.log("seraching in user");
       user = await User.findOne({
-        $or: [{ email: username }, { phone: username }],
+        $or: [{ email: username }, { phone: username } ,{username:username}],
         role
       });
       
@@ -52,6 +68,7 @@ export async function POST(request) {
         }
       )
     }
+    console.log("sdf",isPasswordValid);
     
     // Check if password is valid based on earlier validation
     if (!isPasswordValid) {
@@ -67,6 +84,7 @@ export async function POST(request) {
         }
       )
     }
+   
     
     // Return user data without password
     const { password: _, ...userData } = user.toObject()

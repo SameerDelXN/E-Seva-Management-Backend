@@ -14,7 +14,7 @@ export async function PUT(req, { params }) {
 
     const { staffId } = params;
     const body = await req.json();
-
+console.log(body);
     const staff = await Staff.findById(staffId);
     if(!staff){
       return new NextResponse(
