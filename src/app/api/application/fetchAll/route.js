@@ -16,16 +16,12 @@ export const GET = withCors(async (req) => {
     await connectDB();
 
     const { searchParams } = new URL(req.url);
-    const nameFilter = searchParams.get("name");
-    const statusFilter = searchParams.get("status");
-    const staffFilter = searchParams.get("staff");
 
+    const phoneFilter = searchParams.get("phone")
     // Optional filters
     const query = {};
-    if (nameFilter) query.name = new RegExp(nameFilter, "i"); // case-insensitive search
-    if (statusFilter) query["service.status.name"] = statusFilter;
-    if (staffFilter) query.staff = staffFilter;
 
+    if (phoneFilter) query.phone = phoneFilter
     const applications = await Application.find(query).sort({ createdAt: -1 });
 
     return NextResponse.json(

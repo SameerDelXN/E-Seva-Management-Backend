@@ -59,7 +59,7 @@ export const PUT = withCors(async (request, { params }) => {
       { status: 500 }
     );
   }
-});
+}); 
 
 // Optional: FETCH by ID (for completeness)
 export const GET = withCors(async (request, { params }) => {
