@@ -5,6 +5,13 @@ const ServiceSchema = new mongoose.Schema({
     name: { type: String, unique: true },
     documentNames: [{ type: String }],
     price:{type:Number},
+    status: [
+      {
+        name: { type: String },
+        hexcode: { type: String },
+        askreason: { type: Boolean }
+      }
+    ],
     planPrices: [
         {
           district: { type: String, },

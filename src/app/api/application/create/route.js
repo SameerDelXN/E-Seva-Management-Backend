@@ -61,7 +61,7 @@ export async function POST(request) {
   try {
     await dbConnect();
     const body = await request.json();
-    console.log(body)
+    console.log("data in backend :",body)
     // Validate required fields
     // if (!body.name || !body.provider || !body.staff || !body.amount || !body.serviceId) {
     //   return new NextResponse(
@@ -115,7 +115,7 @@ export async function POST(request) {
     // }
     // Use the entire array of statuses from the service
     const statusArray = Array.isArray(service.status) ? service.status : [];
-    console.log(statusArray)
+    // console.log(statusArray)
 
     // Create the new application with service reference and status from the service
     const newApplication = new Application({
@@ -128,6 +128,7 @@ export async function POST(request) {
       amount: body.amount,
       document: body.document || [],
       receipt: body.receipt || [],
+    initialStatus : body.initialStatus,
       // Service information with status from the service model
       service: {
         id: service._id,
@@ -137,7 +138,7 @@ export async function POST(request) {
     });
 
     // Save to database
-    const savedApplication = await newApplication.save();
+     const savedApplication = await newApplication.save();
 
     return new NextResponse(
       JSON.stringify({

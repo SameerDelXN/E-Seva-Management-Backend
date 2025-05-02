@@ -97,6 +97,7 @@ export async function POST(request) {
       serviceId: savedService._id.toString(),  // Store as string to preserve exact ID
       name: savedService.name,
       price:savedService.price,
+      status: body.status || [],
       documentNames: savedService.document,
       planPrices: savedService.planPrices || []
     };

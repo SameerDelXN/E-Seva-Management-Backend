@@ -154,6 +154,7 @@ import { NextResponse } from 'next/server';
 import dbConnect from '@/utils/db';
 import NewService from '@/models/newServicesSchema';
 import Application from '@/models/application';
+import ServiceGroup from '@/models/ServiceGroup';
 
 // PATCH /api/services/[id]
 export async function PATCH(req, { params }) {
@@ -202,10 +203,32 @@ export async function PATCH(req, { params }) {
 
     // Also update any applications that reference this service
     // Find all applications that have this service ID
+await await ServiceGroup.updateOne(
+  { 'services.serviceId': id },
+  {
+    $set: {
+      'services.$.status': updatedService.status  // this already includes the new status
+    }
+  }
+);
+
+    // await Application.updateMany(
+    //   { 'service.id': id },
+    //   {
+    //     $set: {
+    //       'service.status': {
+    //         name: newStatus.name,
+    //         hexcode: newStatus.hexcode,
+    //         askreason: newStatus.askreason || false
+    //       }
+    //     }
+    //   }
+    // );
+
     await Application.updateMany(
       { 'service.id': id },
       {
-        $set: {
+        $push: {
           'service.status': {
             name: newStatus.name,
             hexcode: newStatus.hexcode,
@@ -214,7 +237,7 @@ export async function PATCH(req, { params }) {
         }
       }
     );
-
+    
     return new NextResponse(
       JSON.stringify({ 
         message: 'Status added successfully and applications updated.', 

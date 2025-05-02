@@ -37,7 +37,13 @@ const applicationSchema = new mongoose.Schema({
   date: { type: Date },
   delivery: { type: String },
   // Keep original status field for backward compatibility
-  status: { type: String, default: "Initiated" },
+  status:  [
+    {
+      name: { type: String },
+      hexcode: { type: String },
+      askreason: { type: Boolean }
+    }
+  ],
   
   // Updated service field to properly reference NewService
   service: {
@@ -52,22 +58,16 @@ const applicationSchema = new mongoose.Schema({
   },
   
   // Add new field to track current status with more details
-  currentStatus: {
-    name: { type: String, default: "Initiated" },
-    hexcode: { type: String, default: "#A78BFA" }, // Purple for Initiated
-    askreason: { type: Boolean, default: false },
-    reason: { type: String, default: "" }, // For storing rejection reasons
-    updatedAt: { type: Date, default: Date.now }
-  },
+  initialStatus: [
+    {
+      name: { type: String },
+      hexcode: { type: String },
+      askreason: { type: Boolean }
+    }
+  ],
   
   // Track status history
-  statusHistory: [{
-    name: { type: String },
-    hexcode: { type: String },
-    reason: { type: String },
-    updatedAt: { type: Date, default: Date.now },
-    updatedBy: { type: String } // Track who changed the status
-  }],
+ 
   
   staff: { type: String },
   amount: { type: Number, required: true },
