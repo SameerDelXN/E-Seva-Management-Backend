@@ -7,7 +7,7 @@ export async function POST(req) {
         await connectDB();
 
         const { name, username,date , password,contactNo,city } = await req.json();
-
+console.log(date)
         // Check if the username already exists
         const existingUser = await StaffManager.findOne({ username });
         if (existingUser) {
@@ -16,7 +16,14 @@ export async function POST(req) {
                 { status: 400 }
             );
         }
-
+        function formatDate(date) {
+            const day = String(date.getDate()).padStart(2, '0');
+            const monthNames = ["JAN", "FEB", "MAR", "APR", "MAY", "JUN", 
+                                "JUL", "AUG", "SEP", "OCT", "NOV", "DEC"];
+            const month = monthNames[date.getMonth()];
+            const year = date.getFullYear();
+            return `${day}-${month}-${year}`;
+        }
         // Hash the password
         // const hashedPassword = await bcrypt.hash(password, 10);
 
@@ -25,10 +32,11 @@ export async function POST(req) {
             name,
             username,
             contactNo,
-            date,
+            date:formatDate(new Date()),
             city,
             password,
         });
+        console.log(newStaffManager);
 
         await newStaffManager.save();
 
