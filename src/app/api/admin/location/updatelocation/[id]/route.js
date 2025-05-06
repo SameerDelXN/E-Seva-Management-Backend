@@ -1,6 +1,8 @@
 import { NextResponse } from 'next/server';
 import dbConnect from '@/utils/db';
 import Location from '@/models/location';
+import NewService from '@/models/newServicesSchema';
+import mongoose from 'mongoose';
 
 // PUT /api/admin/location/[id]
 export async function PUT(req, { params }) {
@@ -52,13 +54,58 @@ export async function PUT(req, { params }) {
       );
     }
 
+    // Store old values before updating
+    const oldDistrict = location.district;
+    const oldState = location.state;
+
+    // Update location document
     location.district = district;
     location.state = state;
-
     await location.save();
 
+    // Update location in all services
+    const allServices = await NewService.find({
+      "planPrices": {
+        $elemMatch: {
+          "state": oldState,
+          "district": oldDistrict
+        }
+      }
+    });
+
+    const bulkOps = allServices.map(service => {
+      return {
+        updateOne: {
+          filter: { 
+            _id: service._id,
+            "planPrices.state": oldState,
+            "planPrices.district": oldDistrict
+          },
+          update: {
+            $set: {
+              "planPrices.$[elem].state": state,
+              "planPrices.$[elem].district": district
+            },
+            $inc: { __v: 1 }
+          },
+          arrayFilters: [{ 
+            "elem.state": oldState, 
+            "elem.district": oldDistrict 
+          }]
+        }
+      };
+    });
+
+    if (bulkOps.length > 0) {
+      await NewService.bulkWrite(bulkOps);
+    }
+
     return new NextResponse(
-      JSON.stringify({ location }),
+      JSON.stringify({ 
+        message: 'Location updated successfully',
+        location,
+        servicesUpdated: bulkOps.length
+      }),
       {
         status: 200,
         headers: {
@@ -93,5 +140,3 @@ export function OPTIONS() {
     },
   });
 }
-
-

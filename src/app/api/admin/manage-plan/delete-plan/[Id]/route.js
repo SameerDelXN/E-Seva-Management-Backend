@@ -1,7 +1,8 @@
 import Plan from "@/models/Plans";
+import NewService from "@/models/newServicesSchema";
+import Location from "@/models/location";
 import connectDB from "@/utils/db";
 import { NextResponse } from "next/server";
-
 
 function setCorsHeaders() {
   const headers = new Headers();
@@ -21,12 +22,12 @@ export async function OPTIONS() {
 export async function DELETE(req, { params }) {
   try {
     await connectDB();
-
-    const { Id } = params;
-
-    const deletedPlan = await Plan.findByIdAndDelete(Id);
-
-    if (!deletedPlan) {
+    
+    const { Id } = params || {};
+    
+    // First verify the plan exists
+    const planToDelete = await Plan.findById(Id);
+    if (!planToDelete) {
       return new NextResponse(
         JSON.stringify({ message: "Plan not found" }),
         {
@@ -36,17 +37,37 @@ export async function DELETE(req, { params }) {
       );
     }
 
+    // 1. Remove the plan from all services
+    console.log(`Removing plan ${Id} from services...`);
+    const serviceUpdateResult = await NewService.updateMany(
+      { "planPrices.plans.plan": Id },
+      { $pull: { "planPrices.$[].plans": { plan: Id } } }
+    );
+    
+    console.log(`Removed plan from ${serviceUpdateResult.modifiedCount} services`);
+
+   
+    // 3. Finally delete the plan itself
+    const deletedPlan = await Plan.findByIdAndDelete(Id);
+
     return new NextResponse(
-      JSON.stringify({ message: "Plan deleted successfully" }),
+      JSON.stringify({ 
+        message: "Plan deleted successfully", 
+        planName: planToDelete.name,
+        servicesUpdated: serviceUpdateResult.modifiedCount
+      }),
       {
         status: 200,
         headers: setCorsHeaders(),
       }
     );
   } catch (error) {
-    console.error("Internal Server Error", error);
+    console.error("Error deleting plan:", error);
     return new NextResponse(
-      JSON.stringify({ error: "Internal Server Error" }),
+      JSON.stringify({ 
+        error: "Internal Server Error",
+        details: process.env.NODE_ENV === 'development' ? error.message : undefined
+      }),
       {
         status: 500,
         headers: setCorsHeaders(),
