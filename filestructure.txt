@@ -179,6 +179,9 @@
                 |-- read
                     |-- route.js
                 |-- update
+                    |-- staff
+                        |-- [id]
+                            |-- route.js
                     |-- [id]
                         |-- route.js
             |-- notifications

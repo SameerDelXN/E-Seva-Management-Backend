@@ -96,8 +96,8 @@ export async function PUT(req, { params }) {
 
   const { id } = params;
   const body = await req.json();
-  const { initialStatus ,staff} = body;
-  console.log(initialStatus);
+  const { staff } = body;
+  console.log(staff);
 
   // if (!initialStatus || !Array.isArray(initialStatus)) {
   //   return new NextResponse(
@@ -112,7 +112,7 @@ export async function PUT(req, { params }) {
   try {
     const updated = await Application.findByIdAndUpdate(
       id,
-      { initialStatus,staff },
+      { staff },
       { new: true }
     );
 
