@@ -2,7 +2,7 @@ import mongoose from "mongoose";
 
 const ServiceSchema = new mongoose.Schema({
     serviceId:{type:String},
-    name: { type: String, unique: true },
+    name: { type: String, },
     documentNames: [{ type: String }],
     price:{type:Number},
     status: [
@@ -28,7 +28,7 @@ const ServiceSchema = new mongoose.Schema({
 });
 
 const ServiceGroupSchema = new mongoose.Schema({
-    name: { type: String, required: true, unique: true },
+    name: { type: String, required: true,},
     image: { type: String, required: true },
     services: [ServiceSchema]  // Embedded array of services with planPrices
 }, { timestamps: true });

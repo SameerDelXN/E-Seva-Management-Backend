@@ -71,19 +71,26 @@ export async function POST(req) {
         // Create a new service group with services only if there are valid entries
         const serviceGroupData = { name, image };
 
-        if (services && Array.isArray(services)) {
-            // Filter out empty or invalid service entries
-            const validServices = services.filter(service => 
-                service.name && 
-                service.name.trim() !== '' && 
-                Array.isArray(service.documentNames) && 
-                service.documentNames.some(doc => doc && doc.trim() !== '')
-            );
+        // if (services && Array.isArray(services)) {
+        //     // Filter out empty or invalid service entries
+        //     // const validServices = services.filter(service => 
+        //     //     service.name && 
+        //     //     service.name.trim() !== '' && 
+        //     //     Array.isArray(service.documentNames) && 
+        //     //     service.documentNames.some(doc => doc && doc.trim() !== '')
+        //     // );
 
-            if (validServices.length > 0) {
-                serviceGroupData.services = validServices;
-            }
-        }
+        //     const validServices = services.filter(service => 
+        //         service.name && 
+        //         service.name.trim() !== '' && 
+        //         Array.isArray(service.documentNames) && 
+        //         service.documentNames.some(doc => doc && doc.trim() !== '')
+        //     );
+            
+        //     if (validServices.length > 0) {
+        //         serviceGroupData.services = validServices;
+        //     }
+        // }
 
         const newServiceGroup = new ServiceGroup(serviceGroupData);
         await newServiceGroup.save();
