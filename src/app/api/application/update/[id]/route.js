@@ -16,7 +16,7 @@ export const PUT = withCors(async (request, { params }) => {
   try {
     await connectDB();
     
-    const { id } = params;
+    const { id } = await params;
     const updateData = await request.json();
     
     if (!id) {
