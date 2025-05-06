@@ -5,6 +5,7 @@ import bcrypt from 'bcryptjs'
 import connectDB from '@/utils/db'
 import Agent from '@/models/agent'
 import Staff from '@/models/staff'
+import StaffManager from "@/models/staffManager"
 
 export async function POST(request) {
   try {
@@ -28,6 +29,21 @@ export async function POST(request) {
         isPasswordValid = (password === user.password);
       }
     }
+    else if(role==="staff_manager"){
+      console.log("seraching in staffmanager");
+      user = await StaffManager.findOne({
+        $or: [{username:username}],
+       
+      });
+      if(user){
+        if(password==user.password){
+          isPasswordValid=true
+        }
+        else{
+          isPasswordValid=false
+        }
+      }
+    }
    
     else if(role === "staff"){
       console.log("seraching in staff");
@@ -42,6 +58,7 @@ export async function POST(request) {
 
     } 
     else {
+      console.log(role)
       console.log("seraching in user");
       user = await User.findOne({
         $or: [{ email: username }, { phone: username } ,{username:username}],
