@@ -26,7 +26,7 @@ const AgentSchema = new mongoose.Schema(
          paidAmount:{type:String,default:"0.00"},
          lastRecharge:{type:String,default:"0.00"},
          unpaidAmount:{type:String,default:"0.00"},
-         balance:{type:String,default:"0.00"},
+         wallet: { type: Number, default: 0 },
 
         status: { type: String,  default: "pending" },
     },

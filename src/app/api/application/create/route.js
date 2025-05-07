@@ -120,7 +120,7 @@ export async function POST(request) {
     // Create the new application with service reference and status from the service
     const newApplication = new Application({
       name: body.name,
-      provider: body.provider,
+      provider: body.agentId,
       phone:body.phone,
       date: body.date || new Date(),
       delivery: body.delivery,
