@@ -87,67 +87,154 @@
 // });
 
 
+// import { NextResponse } from "next/server";
+// import connectDB from "@/utils/db";
+//  import Application from "@/models/application";
+// // PUT: update initialStatus
+// export async function PUT(req, { params }) {
+//   await connectDB();
+
+//   const { id } = params;
+//   const body = await req.json();
+//   const { initialStatus ,staff} = body;
+//   console.log(initialStatus);
+
+//   // if (!initialStatus || !Array.isArray(initialStatus)) {
+//   //   return new NextResponse(
+//   //     JSON.stringify({ error: 'initialStatus must be an array' }),
+//   //     {
+//   //       status: 400,
+//   //       headers: corsHeaders(),
+//   //     }
+//   //   );
+//   // }
+
+//   try {
+//     const updated = await Application.findByIdAndUpdate(
+//       id,
+//       { initialStatus,staff },
+//       { new: true }
+//     );
+
+//     if (!updated) {
+//       return new NextResponse(JSON.stringify({ error: 'Not found' }), {
+//         status: 404,
+//         headers: corsHeaders(),
+//       });
+//     }
+
+//     return new NextResponse(JSON.stringify({ message: 'Updated', data: updated }), {
+//       status: 200,
+//       headers: corsHeaders(),
+//     });
+//   } catch (err) {
+//     return new NextResponse(JSON.stringify({ error: 'Server error' }), {
+//       status: 500,
+//       headers: corsHeaders(),
+//     });
+//   }
+// }
+
+// // Handle preflight requests
+// export async function OPTIONS() {
+//   return new Response(null, {
+//     status: 204,
+//     headers: corsHeaders(),
+//   });
+// }
+
+// // Reusable CORS headers
+// function corsHeaders() {
+//   return {
+//     'Access-Control-Allow-Origin': '*',
+//     'Access-Control-Allow-Methods': 'GET,POST,PUT,DELETE,OPTIONS',
+//     'Access-Control-Allow-Headers': 'Content-Type, Authorization',
+//   };
+// }
 import { NextResponse } from "next/server";
 import connectDB from "@/utils/db";
- import Application from "@/models/application";
-// PUT: update initialStatus
+import Application from "@/models/application";
+import Staff from "@/models/staff";
+
+// Handle OPTIONS requests (preflight)
+export async function OPTIONS() {
+  return new NextResponse(null, {
+    status: 200,
+    headers: {
+      'Access-Control-Allow-Origin': '*',
+      'Access-Control-Allow-Methods': 'GET, POST, PUT, DELETE, OPTIONS',
+      'Access-Control-Allow-Headers': 'Content-Type, Authorization',
+      'Access-Control-Max-Age': '86400'
+    }
+  });
+}
+
 export async function PUT(req, { params }) {
   await connectDB();
 
   const { id } = params;
   const body = await req.json();
-  const { initialStatus ,staff} = body;
-  console.log(initialStatus);
-
-  // if (!initialStatus || !Array.isArray(initialStatus)) {
-  //   return new NextResponse(
-  //     JSON.stringify({ error: 'initialStatus must be an array' }),
-  //     {
-  //       status: 400,
-  //       headers: corsHeaders(),
-  //     }
-  //   );
-  // }
-
+  const { initialStatus, staff, remark, remarkAuthorId } = body;
+  console.log(remark,remarkAuthorId)
   try {
-    const updated = await Application.findByIdAndUpdate(
+    const updatedApp = await Application.findByIdAndUpdate(
       id,
-      { initialStatus,staff },
+      { initialStatus, staff },
       { new: true }
     );
 
-    if (!updated) {
-      return new NextResponse(JSON.stringify({ error: 'Not found' }), {
-        status: 404,
-        headers: corsHeaders(),
-      });
+    if (!updatedApp) {
+      return new NextResponse(
+        JSON.stringify({ error: 'Application not found' }), 
+        {
+          status: 404,
+          headers: {
+            'Access-Control-Allow-Origin': '*',
+            'Content-Type': 'application/json',
+          },
+        }
+      );
     }
 
-    return new NextResponse(JSON.stringify({ message: 'Updated', data: updated }), {
-      status: 200,
-      headers: corsHeaders(),
-    });
+    // Update remark only if both remark and author are provided
+    if (staff && remark && remarkAuthorId) {
+      
+      await Application.findByIdAndUpdate(
+        id,
+        {
+          remark: remark,
+          $push: {
+            remarkHistory: {
+              text: remark,
+              addedBy: remarkAuthorId,
+              addedAt: new Date()
+            }
+          }
+        }
+      );
+    }
+
+    return new NextResponse(
+      JSON.stringify({ message: 'Updated', data: updatedApp }), 
+      {
+        status: 200,
+        headers: {
+          'Access-Control-Allow-Origin': '*',
+          'Content-Type': 'application/json',
+        },
+      }
+    );
   } catch (err) {
-    return new NextResponse(JSON.stringify({ error: 'Server error' }), {
-      status: 500,
-      headers: corsHeaders(),
-    });
+    console.error(err);
+    return new NextResponse(
+      JSON.stringify({ error: 'Server error' }), 
+      {
+        status: 500,
+        headers: {
+          'Access-Control-Allow-Origin': '*',
+          'Content-Type': 'application/json',
+        },
+      }
+    );
   }
-}
-
-// Handle preflight requests
-export async function OPTIONS() {
-  return new Response(null, {
-    status: 204,
-    headers: corsHeaders(),
-  });
-}
-
-// Reusable CORS headers
-function corsHeaders() {
-  return {
-    'Access-Control-Allow-Origin': '*',
-    'Access-Control-Allow-Methods': 'GET,POST,PUT,DELETE,OPTIONS',
-    'Access-Control-Allow-Headers': 'Content-Type, Authorization',
-  };
 }

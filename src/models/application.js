@@ -30,6 +30,11 @@
 
 // const Application = mongoose.models.Application || mongoose.model('Application', applicationSchema);
 // export default Application;
+const RemarkSchema = new mongoose.Schema({
+  text: { type: String, required: true },
+  addedBy: { type: mongoose.Schema.Types.ObjectId, ref: 'User', required: true }, // assuming a User model exists
+  addedAt: { type: Date, default: Date.now }
+});
 const applicationSchema = new mongoose.Schema({
   name: { type: String, required: true },
   phone:{type:Number},
@@ -68,7 +73,8 @@ const applicationSchema = new mongoose.Schema({
   
   // Track status history
  
-  
+   remark: { type: String ,default:""}, // current or latest remark
+  remarkHistory: [RemarkSchema] ,// history of all remarks with metadata,
   staff: { type: String },
   amount: { type: Number, required: true },
   document: [{ type: String, default: null }],
