@@ -78,6 +78,7 @@ export async function POST(request) {
       name: body.name,
       document: body.document,
       visibility: body.visibility,
+      formData:[],
       availablity: body.availablity,
       price: body.price || 0,
       planPrices: body.planPrices || [],

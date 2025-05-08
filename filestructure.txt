@@ -165,6 +165,12 @@
                     |-- update-manager
                         |-- [managerId]
                             |-- route.js
+            |-- agent
+                |-- application
+                    |-- [agentId]
+                        |-- route.js
+                |-- recharge
+                    |-- route.js
             |-- application
                 |-- create
                     |-- route.js
