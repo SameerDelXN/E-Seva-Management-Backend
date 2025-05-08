@@ -174,12 +174,13 @@ export async function PUT(req, { params }) {
 
   const { id } = params;
   const body = await req.json();
-  const { initialStatus, staff, remark, remarkAuthorId } = body;
-  console.log(remark,remarkAuthorId)
+  console.log(body)
+  const { initialStatus, staff, remark, remarkAuthorId,document } = body;
+  console.log(document)
   try {
     const updatedApp = await Application.findByIdAndUpdate(
       id,
-      { initialStatus, staff },
+      { initialStatus, staff,document },
       { new: true }
     );
 
@@ -196,24 +197,7 @@ export async function PUT(req, { params }) {
       );
     }
 
-    // Update remark only if both remark and author are provided
-    if (staff && remark && remarkAuthorId) {
-      
-      await Application.findByIdAndUpdate(
-        id,
-        {
-          remark: remark,
-          $push: {
-            remarkHistory: {
-              text: remark,
-              addedBy: remarkAuthorId,
-              addedAt: new Date()
-            }
-          }
-        }
-      );
-    }
-
+   
     return new NextResponse(
       JSON.stringify({ message: 'Updated', data: updatedApp }), 
       {
