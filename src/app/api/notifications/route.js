@@ -91,25 +91,28 @@ export async function GET(request) {
     await connectDB();
     
     const { searchParams } = new URL(request.url);
-    const recipient = searchParams.get('recipient');
+    const recipientId = searchParams.get('recipient');
     const unreadOnly = searchParams.get('unreadOnly') === 'true';
     
-    if (!recipient) {
+    if (!recipientId) {
       return NextResponse.json(
         { error: "Recipient parameter is required" },
         { status: 400, headers: corsHeaders }
       );
     }
     
-    const query = { recipient };
+    const query = { recipientId };
     if (unreadOnly) {
       query.read = false;
     }
-    
-    const notifications = await Notification.find(query)
+    if(recipientId==="admin"){
+      const notifications = await Notification.find({recipientRole : recipientId}).sort({ createdAt: -1 })
+      .limit(20);
+      return NextResponse.json({ notifications }, { headers: corsHeaders });
+    }
+    const notifications = await Notification.find({recipientId})
       .sort({ createdAt: -1 })
       .limit(20);
-    
     // Fixed the structure of the response
     return NextResponse.json({ notifications }, { headers: corsHeaders });
   } catch (error) {

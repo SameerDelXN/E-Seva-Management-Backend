@@ -28,7 +28,7 @@ export async function GET(request, { params }) {
   try {
     await connectDB();
     const { agentId } = params;
-
+    console.log(agentId)
     if (!agentId) {
       return NextResponse.json(
         { success: false, message: "Agent ID is required" },
@@ -41,12 +41,6 @@ export async function GET(request, { params }) {
 
     // Find all applications where provider matches agentId
     const applications = await Application.find({ provider: agentId })
-      .sort({ createdAt: -1 }) // Sort by newest first
-      .populate({
-        path: 'service.id',
-        model: 'NewService',
-        select: 'name description' // Only populate these fields
-      });
 
     return NextResponse.json(
       {

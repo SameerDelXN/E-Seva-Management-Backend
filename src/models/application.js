@@ -145,7 +145,14 @@ const applicationSchema = new mongoose.Schema({
   amount: { type: Number, required: true },
 
   document: [DocumentSchema],
-  receipt: [{ type: String, default: "" }]
+  receipt: [{ type: String, default: "" }],
+  additional:[
+    {
+      inputType:{type:String},
+      label:{type:String},
+      value:{type:String}
+    }
+  ]
 }, { timestamps: true });
 
 delete mongoose.models.Application;

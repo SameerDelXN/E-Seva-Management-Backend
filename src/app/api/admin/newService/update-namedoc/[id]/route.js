@@ -64,7 +64,6 @@
 
 
 
-
 import { NextResponse } from 'next/server';
 import dbConnect from '@/utils/db';
 import NewService from '@/models/newServicesSchema';
@@ -80,7 +79,6 @@ export async function PUT(req, { params }) {
     const body = await req.json();
     console.log(body);
     
-
     if (!id) {
       return NextResponse.json(
         { message: 'Service ID is required.' },
@@ -88,7 +86,7 @@ export async function PUT(req, { params }) {
       );
     }
 
-    // Get the current service before update to compare status changes
+    // Get the current service before update to compare changes
     const currentService = await NewService.findById(id);
     if (!currentService) {
       return NextResponse.json(
@@ -104,33 +102,44 @@ export async function PUT(req, { params }) {
       { new: true }
     );
 
-    // Check if status array was modified
+    // Check which fields were modified
     const statusChanged = 
       body.status && 
       JSON.stringify(currentService.status) !== JSON.stringify(body.status);
+    
+    const nameChanged = 
+      body.name && 
+      currentService.name !== body.name;
+    
+    const formDataChanged = 
+      body.formData && 
+      JSON.stringify(currentService.formData) !== JSON.stringify(body.formData);
 
-    // Update Service Groups that contain this service
-    if (statusChanged || body.name) {
+    // Prepare update object for Service Groups
+    const serviceGroupUpdates = {};
+    if (nameChanged) {
+      serviceGroupUpdates['services.$.name'] = updatedService.name;
+    }
+    if (statusChanged) {
+      serviceGroupUpdates['services.$.status'] = updatedService.status;
+    }
+    if (formDataChanged) {
+      serviceGroupUpdates['services.$.formData'] = updatedService.formData;
+    }
+
+    // Update Service Groups that contain this service if any relevant field changed
+    if (nameChanged || statusChanged || formDataChanged) {
       await ServiceGroup.updateMany(
         { 'services.serviceId': id },
-        {
-          $set: {
-            'services.$.name': body.name || updatedService.name,
-            ...(statusChanged && { 'services.$.status': updatedService.status })
-          }
-        }
+        { $set: serviceGroupUpdates }
       );
     }
 
-    // Update Applications that use this service
+    // Update Applications that use this service if status changed
     if (statusChanged) {
       await Application.updateMany(
         { 'service.id': id },
-        {
-          $set: {
-            'service.status': updatedService.status
-          }
-        }
+        { $set: { 'service.status': updatedService.status } }
       );
     }
 
@@ -138,8 +147,12 @@ export async function PUT(req, { params }) {
       { 
         message: 'Service updated successfully.', 
         service: updatedService,
-        statusUpdated: statusChanged,
-        applicationsUpdated: statusChanged
+        updates: {
+          statusUpdated: statusChanged,
+          nameUpdated: nameChanged,
+          formDataUpdated: formDataChanged,
+          applicationsUpdated: statusChanged
+        }
       },
       { status: 200, headers: { 'Access-Control-Allow-Origin': '*' } }
     );
@@ -158,7 +171,7 @@ export async function OPTIONS() {
     status: 204,
     headers: {
       'Access-Control-Allow-Origin': '*',
-      'Access-Control-Allow-Methods': 'PUT, PATCH,OPTIONS',
+      'Access-Control-Allow-Methods': 'PUT, PATCH, OPTIONS',
       'Access-Control-Allow-Headers': 'Content-Type',
     },
   });

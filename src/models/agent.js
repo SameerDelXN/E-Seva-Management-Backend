@@ -8,6 +8,7 @@ const AgentSchema = new mongoose.Schema(
         phone: { type: String, required: true, unique: true },
         shopName:{type:String,required:true},
         shopAddress:{type:String,required:true},
+        planName:{type:String},
         location:{type:String},
         referralCode:{type:String},
         username:{type:String,required:true},

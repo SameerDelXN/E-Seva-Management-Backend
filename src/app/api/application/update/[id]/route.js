@@ -155,6 +155,7 @@ import { NextResponse } from "next/server";
 import connectDB from "@/utils/db";
 import Application from "@/models/application";
 import Staff from "@/models/staff";
+import Notification from "@/models/Notification";
 
 // Handle OPTIONS requests (preflight)
 export async function OPTIONS() {
@@ -174,13 +175,26 @@ export async function PUT(req, { params }) {
 
   const { id } = params;
   const body = await req.json();
-  console.log(body)
-  const { initialStatus, staff, remark, remarkAuthorId,document } = body;
-  console.log(document)
+  const { initialStatus, staff, remark, remarkAuthorId, document, provider } = body;
   try {
+    // First get the current application to compare changes
+    const currentApp = await Application.findById(id);
+    if (!currentApp) {
+      return new NextResponse(
+        JSON.stringify({ error: 'Application not found' }), 
+        {
+          status: 404,
+          headers: {
+            'Access-Control-Allow-Origin': '*',
+            'Content-Type': 'application/json',
+          },
+        }
+      );
+    }
+
     const updatedApp = await Application.findByIdAndUpdate(
       id,
-      { initialStatus, staff,document },
+      { initialStatus, staff, document },
       { new: true }
     );
 
@@ -197,7 +211,59 @@ export async function PUT(req, { params }) {
       );
     }
 
+    // Check if staff was changed
+    if (staff && currentApp.staff?.toString() !== staff?.toString()) {
+      const newStaff = await Staff.findById(staff);
+      const appName = updatedApp.name || "an application";
+      
+      // Notification for the new staff member
+      if (newStaff) {
+        const staffNotification = new Notification({
+          title: "New Assignment",
+          message: `You have been assigned to handle ${appName}`,
+          recipientId: staff,
+          playSound: true
+        });
+        await staffNotification.save();
+      }
+
+      // Notification for admin (tracking staff changes)
+      const adminNotification = new Notification({
+        title: "Staff Assignment Changed",
+        message: `Staff for ${appName} has been changed to ${newStaff?.name || "new staff"}`,
+        recipientRole: 'admin',
+        playSound: true
+      });
+      await adminNotification.save();
+    }
    
+    if (initialStatus && currentApp.initialStatus[0]?.name !== initialStatus?.name) {
+      console.log(true)
+      const appName = updatedApp.name || "an application";
+      const statusName = initialStatus?.name || "updated status";
+      console.log(appName,statusName)
+      // Notification for admin
+      const adminStatusNotification = new Notification({
+        title: "Application Status Updated",
+        message: `Status for ${appName} has been changed to ${statusName}`,
+        recipientRole: 'admin',
+        playSound: true
+      });
+
+      // Notification for agent (provider)
+      const agentNotification = new Notification({
+        title: "Your Application Status Updated",
+        message: `Status for your application ${appName} has been changed to ${statusName}`,
+        recipientId: provider || currentApp.provider, // Use body.provider or fallback to current app provider
+        playSound: true
+      });
+
+      await Promise.all([
+        adminStatusNotification.save(),
+        agentNotification.save()
+      ]);
+    }
+
     return new NextResponse(
       JSON.stringify({ message: 'Updated', data: updatedApp }), 
       {
@@ -211,7 +277,7 @@ export async function PUT(req, { params }) {
   } catch (err) {
     console.error(err);
     return new NextResponse(
-      JSON.stringify({ error: 'Server error' }), 
+      JSON.stringify({ error: 'Server error', details: err.message }), 
       {
         status: 500,
         headers: {

@@ -100,7 +100,8 @@ export async function POST(request) {
       price:savedService.price,
       status: body.status || [],
       documentNames: savedService.document,
-      planPrices: savedService.planPrices || []
+      planPrices: savedService.planPrices || [],
+      formData:savedService.formDaa || []
     };
 
     // Push the service to the service group

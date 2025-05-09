@@ -41,6 +41,7 @@ import { NextResponse } from 'next/server';
 import dbConnect from '@/utils/db';
 import Application from '@/models/application';
 import NewService from '@/models/newServicesSchema';
+import Notification from '@/models/Notification';
 import mongoose from 'mongoose';
 
 // Handle OPTIONS requests (preflight)
@@ -61,24 +62,8 @@ export async function POST(request) {
   try {
     await dbConnect();
     const body = await request.json();
-    console.log("data in backend :",body)
-    // Validate required fields
-    // if (!body.name || !body.provider || !body.staff || !body.amount || !body.serviceId) {
-    //   return new NextResponse(
-    //     JSON.stringify({ message: 'Missing required fields' }),
-    //     {
-    //       status: 400,
-    //       headers: {
-    //         'Access-Control-Allow-Origin': '*',
-    //         'Access-Control-Allow-Methods': 'GET, POST, PUT, DELETE, OPTIONS',
-    //         'Access-Control-Allow-Headers': 'Content-Type, Authorization',
-    //         'Content-Type': 'application/json',
-    //       },
-    //     }
-    //   );
-    // }
-// console.log(body);
-    // Find the service by ID to get its status
+    console.log("data in backend :", body);
+
     const serviceId = body.service._id;
     const service = await NewService.findById(serviceId);
     console.log(service);
@@ -97,39 +82,21 @@ export async function POST(request) {
       );
     }
 
-    // Extract the default/initial status from the service's status array
-    // Assuming the first status in the array is the initial status
-    // let initialStatus = {
-    //   name: "created",
-    //   hexcode: "#34fc23",
-    //   askreason: false
-    // };
-
-    // // If service has status information, use the first one (or appropriate one based on your logic)
-    // if (service.status && service.status.length > 0) {
-    //   initialStatus = {
-    //     name: service.status[0].name || "created",
-    //     hexcode: service.status[0].hexcode || "#34fc23",
-    //     askreason: service.status[0].askreason || false
-    //   };
-    // }
-    // Use the entire array of statuses from the service
     const statusArray = Array.isArray(service.status) ? service.status : [];
-    // console.log(statusArray)
 
-    // Create the new application with service reference and status from the service
+    // Create the new application
     const newApplication = new Application({
       name: body.name,
       provider: body.agentId,
-      phone:body.phone,
+      phone: body.phone,
       date: body.date || new Date(),
       delivery: body.delivery,
       staff: body.staff,
       amount: body.amount,
       document: body.document || [],
       receipt: body.receipt || [],
-    initialStatus : body.initialStatus,
-      // Service information with status from the service model
+      additional: body.additional || [],
+      initialStatus: body.initialStatus,
       service: {
         id: service._id,
         name: service.name,
@@ -137,8 +104,34 @@ export async function POST(request) {
       }
     });
 
-    // Save to database
-     const savedApplication = await newApplication.save();
+    // Save the application to database
+    const savedApplication = await newApplication.save();
+
+    // Create notifications for admin and staff-manager
+    const notificationTitle = `New Application Created`;
+    const notificationMessage = `A new application for ${service.name} has been created by ${body.name}`;
+
+    // Notification for admin
+    const adminNotification = new Notification({
+      title: notificationTitle,
+      message: notificationMessage,
+      recipientRole: 'admin',
+      playSound: true
+    });
+
+    // Notification for staff-manager
+    const staffManagerNotification = new Notification({
+      title: notificationTitle,
+      message: notificationMessage,
+      recipientRole: 'staff-manager',
+      playSound: true
+    });
+
+    // Save notifications
+    await Promise.all([
+      adminNotification.save(),
+      staffManagerNotification.save()
+    ]);
 
     return new NextResponse(
       JSON.stringify({
