@@ -30,5 +30,5 @@ const NotificationSchema = new mongoose.Schema({
     default: Date.now,
   },
 });
-
+delete mongoose.models.Notification
 export default mongoose.models.Notification || mongoose.model('Notification', NotificationSchema);
