@@ -1,6 +1,6 @@
 // File: models/Notification.js
 import mongoose from 'mongoose';
-
+//sample
 const NotificationSchema = new mongoose.Schema({
   title: {
     type: String,
