@@ -114,7 +114,7 @@ const applicationSchema = new mongoose.Schema({
   }],
   date: { type: Date },
   delivery: { type: String },
-
+  location:{type:String},
   status: [
     {
       name: { type: String },

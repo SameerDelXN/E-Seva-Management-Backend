@@ -92,6 +92,7 @@ export async function POST(request) {
       date: body.date || new Date(),
       delivery: body.delivery,
       staff: body.staff,
+      location:body.location,
       amount: body.amount,
       document: body.document || [],
       receipt: body.receipt || [],
