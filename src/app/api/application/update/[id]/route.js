@@ -512,7 +512,7 @@ export async function PUT(req, { params }) {
          const AgentNotification = new Notification({
           title: `${updatedApp?.name}'s Application is Updated`,
           message: `${updatedApp?.name}'s Application is Updated`,
-          recipientId:updatedApp?.provider ? body.provider[0].id : null,
+          recipientId:updatedApp?.provider ? updatedApp.provider[0].id : null,
           playSound: true
         });
     
