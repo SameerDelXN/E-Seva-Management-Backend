@@ -87,7 +87,7 @@ export async function POST(request) {
     // Create the new application
     const newApplication = new Application({
       name: body.name,
-      provider: body.agentId,
+      provider: body.provider,
       phone: body.phone,
       date: body.date || new Date(),
       delivery: body.delivery,

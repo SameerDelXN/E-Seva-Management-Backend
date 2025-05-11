@@ -40,7 +40,9 @@ export async function GET(request, { params }) {
     }
 
     // Find all applications where provider matches agentId
-    const applications = await Application.find({ provider: agentId })
+   const applications = await Application.find({ 
+  "provider.id": agentId 
+});
 
     return NextResponse.json(
       {

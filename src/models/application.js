@@ -108,7 +108,10 @@ const DocumentSchema = new mongoose.Schema({
 const applicationSchema = new mongoose.Schema({
   name: { type: String, required: true },
   phone: { type: Number },
-  provider: { type: String, required: true },
+  provider: [{
+    id:{type:String},
+    name:{type:String}
+  }],
   date: { type: Date },
   delivery: { type: String },
 
@@ -141,7 +144,12 @@ const applicationSchema = new mongoose.Schema({
   remark: { type: String, default: "" },
   remarkHistory: [RemarkSchema],
 
-  staff: { type: String },
+  staff: [
+    {
+      name:{type:String},
+      id:{type:String}
+    }
+  ],
   amount: { type: Number, required: true },
 
   document: [DocumentSchema],

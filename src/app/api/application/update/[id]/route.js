@@ -469,11 +469,11 @@ export async function OPTIONS() {
 export async function PUT(req, { params }) {
   await connectDB();
 
-  const { id } = params;
+  const { id } = params;  
+  console.log(id)
   const body = await req.json();
-  console.log(body)
+  console.log(body.document)
   const { initialStatus, staff, remark, remarkAuthorId,document } = body;
-  console.log(document)
   try {
     const updatedApp = await Application.findByIdAndUpdate(
       id,
