@@ -14,7 +14,6 @@ const NotificationSchema = new mongoose.Schema({
   },
   recipientRole: {
     type: String,
-    enum: ['agent', 'admin', 'staff', 'staff-manager'],
     // Not required if sending to specific user
   },
   read: {

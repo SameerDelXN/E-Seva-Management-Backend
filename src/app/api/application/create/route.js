@@ -128,10 +128,12 @@ export async function POST(request) {
       playSound: true
     });
 
+    
+
     // Save notifications
     await Promise.all([
       adminNotification.save(),
-      staffManagerNotification.save()
+      staffManagerNotification.save(),
     ]);
 
     return new NextResponse(

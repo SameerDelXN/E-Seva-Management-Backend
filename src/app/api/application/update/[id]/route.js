@@ -452,6 +452,7 @@ import { NextResponse } from "next/server";
 import connectDB from "@/utils/db";
 import Application from "@/models/application";
 import Staff from "@/models/staff";
+import Notification from "@/models/Notification";
 
 // Handle OPTIONS requests (preflight)
 export async function OPTIONS() {
@@ -472,7 +473,7 @@ export async function PUT(req, { params }) {
   const { id } = params;  
   console.log(id)
   const body = await req.json();
-  console.log(body.document)
+  console.log(body)
   const { initialStatus, staff, remark, remarkAuthorId,document } = body;
   try {
     const updatedApp = await Application.findByIdAndUpdate(
@@ -480,7 +481,7 @@ export async function PUT(req, { params }) {
       { initialStatus, staff,document },
       { new: true }
     );
-
+    console.log(updatedApp)
     if (!updatedApp) {
       return new NextResponse(
         JSON.stringify({ error: 'Application not found' }), 
@@ -493,6 +494,43 @@ export async function PUT(req, { params }) {
         }
       );
     }
+
+     const adminNotification = new Notification({
+          title: `${body.name}'s Application is Updated`,
+          message: `${body.name}'s Application is Updated`,
+          recipientRole: 'admin',
+          playSound: true
+        });
+    
+        // Notification for staff-manager
+        const staffManagerNotification = new Notification({
+          title: `${updatedApp?.name}'s Application is Updated`,
+          message: `${updatedApp?.name}'s Application is Updated`,
+          recipientRole: `staff-manager - ${updatedApp?.location}`,
+          playSound: true
+        });
+         const AgentNotification = new Notification({
+          title: `${updatedApp?.name}'s Application is Updated`,
+          message: `${updatedApp?.name}'s Application is Updated`,
+          recipientId:updatedApp?.provider ? body.provider[0].id : null,
+          playSound: true
+        });
+    
+        const staffNotification = new Notification({
+           title: `${updatedApp?.name}'s Application is Assigned to you.`,
+          message:`${updatedApp?.name}'s Application is Assigned to you by Staff Manager`,
+          recipientId:updatedApp?.staff ? updatedApp?.staff[0].id : null,
+          playSound: true
+        })
+    
+        // Save notifications
+        await Promise.all([
+          adminNotification.save(),
+          staffManagerNotification.save(),
+          updatedApp?.staff ? staffNotification.save() : null,
+          updatedApp?.provider ? AgentNotification.save() : null
+        ]);
+    
 
    
     return new NextResponse(

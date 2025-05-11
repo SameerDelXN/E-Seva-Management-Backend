@@ -93,7 +93,7 @@ export async function GET(request) {
     const { searchParams } = new URL(request.url);
     const recipientId = searchParams.get('recipient');
     const unreadOnly = searchParams.get('unreadOnly') === 'true';
-    
+    console.log(recipientId)
     if (!recipientId) {
       return NextResponse.json(
         { error: "Recipient parameter is required" },
@@ -107,6 +107,11 @@ export async function GET(request) {
     }
     if(recipientId==="admin"){
       const notifications = await Notification.find({recipientRole : recipientId}).sort({ createdAt: -1 })
+      .limit(20);
+      return NextResponse.json({ notifications }, { headers: corsHeaders });
+    }
+    if(recipientId.includes("staff-manager")){
+       const notifications = await Notification.find({recipientRole : recipientId}).sort({ createdAt: -1 })
       .limit(20);
       return NextResponse.json({ notifications }, { headers: corsHeaders });
     }
