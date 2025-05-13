@@ -1,7 +1,8 @@
 // app/api/agent/recharge/route.js
 import { NextResponse } from "next/server";
 import mongoose from "mongoose";
-import Agent from "../../../../models/agent";
+import Agent from "@/models/agent";
+import RechargeHistory from "@/models/rechargeHistory"; // Add this import
 import connectDB from "@/utils/db";
 
 // CORS headers configuration
@@ -28,8 +29,8 @@ export async function POST(request) {
   try {
     await connectDB();
     const body = await request.json();
-    const { agentId, amount } = body;
-
+    const { agentId, amount,agentName } = body;
+    console.log(body)
     if (!agentId || !amount) {
       return NextResponse.json(
         { success: false, message: "Missing required fields" },
@@ -65,7 +66,8 @@ export async function POST(request) {
     const currentBalance = agent.wallet || 0;
     const newBalance = currentBalance + rechargeAmount;
 
-    await Agent.findByIdAndUpdate(
+    // Update agent's wallet and other fields
+    const updatedAgent = await Agent.findByIdAndUpdate(
       agentId,
       {
         wallet: newBalance,
@@ -74,6 +76,18 @@ export async function POST(request) {
       },
       { new: true }
     );
+    updatedAgent.save()
+    // Create recharge history record using the imported model
+    const newRechargeHistory = new RechargeHistory({
+      agentId: agentId,
+      agentName: agentName,
+      dateTime: new Date(),
+      balanceBefore: currentBalance,
+      rechargeAmount,
+      balanceAfter: newBalance,
+    });
+
+    await newRechargeHistory.save();
 
     return NextResponse.json(
       {
@@ -83,6 +97,7 @@ export async function POST(request) {
           previousBalance: currentBalance,
           rechargeAmount,
           newBalance,
+          rechargeHistoryId: newRechargeHistory._id,
         },
       },
       {
