@@ -43,7 +43,7 @@ import Application from '@/models/application';
 import NewService from '@/models/newServicesSchema';
 import Notification from '@/models/Notification';
 import mongoose from 'mongoose';
-
+import Agent from "@/models/agent"
 // Handle OPTIONS requests (preflight)
 export async function OPTIONS() {
   return new NextResponse(null, {
@@ -81,7 +81,20 @@ export async function POST(request) {
         }
       );
     }
-
+     const agent = await Agent.findById(body.provider.id);
+    if (!agent) {
+      await session.abortTransaction();
+      return new NextResponse(
+        JSON.stringify({ message: 'Agent not found' }),
+        {
+          status: 404,
+          headers: {
+            'Access-Control-Allow-Origin': '*',
+            'Content-Type': 'application/json',
+          },
+        }
+      );
+    }
     const statusArray = Array.isArray(service.status) ? service.status : [];
 
     // Create the new application
@@ -105,8 +118,12 @@ export async function POST(request) {
       }
     });
 
+  
+
     // Save the application to database
     const savedApplication = await newApplication.save();
+       agent.wallet -= body.amount;
+    await agent.save();
 
     // Create notifications for admin and staff-manager
     const notificationTitle = `New Application Created`;

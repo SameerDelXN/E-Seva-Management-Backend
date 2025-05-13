@@ -171,6 +171,9 @@
                         |-- route.js
                 |-- recharge
                     |-- route.js
+                |-- wallet
+                    |-- [agentID]
+                        |-- route.js
             |-- application
                 |-- create
                     |-- route.js
