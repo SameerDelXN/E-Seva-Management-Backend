@@ -31,7 +31,8 @@ const newServicesSchema = new mongoose.Schema({
     {
       name: { type: String },
       hexcode: { type: String },
-      askreason: { type: Boolean }
+      askreason: { type: Boolean },
+      priority: { type: Number, default: 0 }
     }
   ],
   
