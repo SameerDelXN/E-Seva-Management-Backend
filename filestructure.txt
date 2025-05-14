@@ -170,7 +170,12 @@
                     |-- [agentId]
                         |-- route.js
                 |-- recharge
+                    |-- history
+                        |-- route.js
                     |-- route.js
+                |-- wallet
+                    |-- [agentID]
+                        |-- route.js
             |-- application
                 |-- create
                     |-- route.js
@@ -209,6 +214,7 @@
         |-- newServicesSchema.js
         |-- Notification.js
         |-- Plans.js
+        |-- rechargeHistory.js
         |-- service.js
         |-- ServiceGroup.js
         |-- staff.js
