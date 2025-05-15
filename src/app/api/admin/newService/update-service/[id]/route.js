@@ -174,6 +174,7 @@ export async function PATCH(req, { params }) {
       {
         $push: {
           'service.status': {
+
             name: newStatus.name,
             hexcode: newStatus.hexcode,
             askreason: newStatus.askreason || false,
