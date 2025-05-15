@@ -35,7 +35,7 @@ console.log(body);
     return new NextResponse(
       JSON.stringify({ 
         success: true, 
-        message: "Updated Successfully", 
+        message: "success", 
         data: updatedStaff 
       }), 
       { status: 200, headers }

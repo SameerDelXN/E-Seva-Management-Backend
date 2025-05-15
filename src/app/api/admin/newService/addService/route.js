@@ -23,7 +23,7 @@ export async function POST(request) {
   try {
     await dbConnect();
     const body = await request.json();
-    console.log("body",body.planPrices[0].plans);
+    console.log("body",body);
     // Validate required fields
     if (!body.name || !body.document) {
       return new NextResponse(
@@ -84,8 +84,7 @@ export async function POST(request) {
       planPrices: body.planPrices || [],
       status: body.status || [],
       serviceGroup: {
-        id: serviceGroup._id,
-        name: serviceGroup.name
+        id: body.serviceGroupId,
       }
     });
 

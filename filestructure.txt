@@ -104,9 +104,16 @@
                     |-- update-namedoc
                         |-- [id]
                             |-- route.js
+                    |-- update-plan-price
+                        |-- [serviceId]
+                            |-- route.js
                     |-- update-service
                         |-- [id]
                             |-- route.js
+                    |-- update-status
+                        |-- [serviceId]
+                            |-- [statusId]
+                                |-- route.js
                 |-- newServices
                     |-- create-service
                         |-- route.js
@@ -199,6 +206,9 @@
                         |-- route.js
             |-- notifications
                 |-- route.js
+            |-- upload
+                |-- doc
+                    |-- route.js
         |-- favicon.ico
         |-- globals.css
         |-- layout.js

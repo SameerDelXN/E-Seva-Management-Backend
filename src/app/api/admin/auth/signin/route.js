@@ -52,7 +52,12 @@ export async function POST(request) {
        
       });
       if (user) {
-        isPasswordValid = await bcrypt.compare(password, user.password);
+        if(password==user.password){
+          isPasswordValid=true
+        }
+        else{
+          isPasswordValid=false
+        }
       }
       console.log(user);
 
