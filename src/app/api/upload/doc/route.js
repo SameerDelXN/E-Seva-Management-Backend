@@ -2,7 +2,7 @@ import { NextResponse } from "next/server";
 import { google } from "googleapis";
 import { Readable } from 'stream'; // ✅ Add this import
 
-
+export const runtime = 'nodejs'; // 🔑 Crucial for Vercel
 const CORS_HEADERS = {
   'Access-Control-Allow-Origin': '*',
   'Access-Control-Allow-Methods': 'GET, POST, PUT, DELETE, OPTIONS',
