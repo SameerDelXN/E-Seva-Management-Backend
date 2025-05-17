@@ -69,6 +69,7 @@ import dbConnect from '@/utils/db';
 import NewService from '@/models/newServicesSchema';
 import Application from '@/models/application';
 import ServiceGroup from '@/models/ServiceGroup';
+const mongoose = require("mongoose");
 
 // PUT /api/admin/newService/updateService/[id]
 export async function PUT(req, { params }) {
@@ -94,11 +95,44 @@ export async function PUT(req, { params }) {
         { status: 404, headers: { 'Access-Control-Allow-Origin': '*' } }
       );
     }
+const isValidObjectId = (value) => {
+  return mongoose.Types.ObjectId.isValid(value) && (new mongoose.Types.ObjectId(value)).toString() === value;
+};
 
+let serviceGroup = null;
+
+if (body.serviceGroup) {
+  if (isValidObjectId(body.serviceGroup)) {
+    // It's an ObjectId string
+    serviceGroup = await ServiceGroup.findById(body.serviceGroup);
+  } else {
+    // It's a name string
+    serviceGroup = await ServiceGroup.findOne({ name: body.serviceGroup });
+  }
+
+  if (!serviceGroup) {
+    return NextResponse.json({ error: 'Service group not found' }, { status: 404 });
+  }
+}
+
+ console.log("group",serviceGroup);
+ const data={
+  name:body.name,
+  document:body.document,
+  planPrices:body.planPrices,
+  serviceGroup: {
+        id: serviceGroup._id,
+        name:serviceGroup.name,
+      },
+      status:body.status,
+      price:body.price,
+      formData:body.formData,
+      visibility:body.visibility
+}
     // Update the service
     const updatedService = await NewService.findByIdAndUpdate(
       id,
-      body, // Update with all fields from request body
+      data, // Update with all fields from request body
       { new: true }
     );
 

@@ -23,7 +23,7 @@ export async function POST(request) {
   try {
     await dbConnect();
     const body = await request.json();
-    console.log("body",body);
+    // console.log("body",body);
     // Validate required fields
     if (!body.name || !body.document) {
       return new NextResponse(
@@ -58,6 +58,7 @@ export async function POST(request) {
 
     // Find the service group first
     const serviceGroup = await ServiceGroup.findById(body.serviceGroupId);
+    console.log("sdf",serviceGroup);
     if (!serviceGroup) {
       return new NextResponse(
         JSON.stringify({ message: 'Service group not found' }),
@@ -85,6 +86,7 @@ export async function POST(request) {
       status: body.status || [],
       serviceGroup: {
         id: body.serviceGroupId,
+        name:serviceGroup.name,
       }
     });
 
