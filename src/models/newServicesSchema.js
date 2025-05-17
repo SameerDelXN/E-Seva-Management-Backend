@@ -61,6 +61,10 @@ const newServicesSchema = new mongoose.Schema({
         type: mongoose.Schema.Types.Mixed,
         default: null
       },
+      price:{
+        type:Number,
+        default:0
+      },
       // Options for select, radio, or checkbox inputs
       options: [
         {
