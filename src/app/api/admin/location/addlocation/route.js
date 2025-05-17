@@ -1,73 +1,8 @@
-// // src/app/api/admin/location/addlocation/route.js
-// import { NextResponse } from 'next/server';
-// import dbConnect from '@/utils/db';
-// import Location from '@/models/location';
-
-// export const POST = async (req) => {
-//   try {
-//     await dbConnect();
-
-//     const body = await req.json();
-//     const { district, state } = body;
-
-//     if (!district || !state) {
-//       return new NextResponse(
-//         JSON.stringify({ message: 'District and State are required' }),
-//         {
-//           status: 400,
-//           headers: {
-//             'Access-Control-Allow-Origin': '*',
-//             'Content-Type': 'application/json',
-//           },
-//         }
-//       );
-//     }
-
-//     const newLocation = new Location({ district, state });
-//     await newLocation.save();
-
-//     return new NextResponse(
-//       JSON.stringify({ message: 'Location added successfully', location: newLocation }),
-//       {
-//         status: 201,
-//         headers: {
-//           'Access-Control-Allow-Origin': '*',
-//           'Content-Type': 'application/json',
-//         },
-//       }
-//     );
-//   } catch (error) {
-//     console.error('Error adding location:', error);
-//     return new NextResponse(
-//       JSON.stringify({ message: 'Internal Server Error' }),
-//       {
-//         status: 500,
-//         headers: {
-//           'Access-Control-Allow-Origin': '*',
-//           'Content-Type': 'application/json',
-//         },
-//       }
-//     );
-//   }
-// };
-
-// // For preflight OPTIONS request
-// export function OPTIONS() {
-//   return new NextResponse(null, {
-//     status: 204,
-//     headers: {
-//       'Access-Control-Allow-Origin': '*',
-//       'Access-Control-Allow-Methods': 'POST, OPTIONS',
-//       'Access-Control-Allow-Headers': 'Content-Type, Authorization',
-//     },
-//   });
-// }
-
-
 import { NextResponse } from 'next/server';
 import dbConnect from '@/utils/db';
 import Location from '@/models/location';
 import NewService from '@/models/newServicesSchema';
+import ServiceGroup from '@/models/ServiceGroup';
 import Plan from '@/models/Plans';
 import mongoose from 'mongoose';
 
@@ -98,23 +33,22 @@ export const POST = async (req) => {
     // 2. Fetch all plans
     const allPlans = await Plan.find({});
 
-    // Prepare plan array for this new location
-    const planEntries = allPlans.map((plan) => ({
-      plan: plan._id,
-      planName: plan.name,
-      price: 0,
-      _id: new mongoose.Types.ObjectId(),
-    }));
-
-    // 3. Fetch all services and update them
+    // 3. Update all services in NewService collection
     const allServices = await NewService.find({});
-
-    const bulkOps = allServices.map((service) => {
+    const serviceBulkOps = allServices.map((service) => {
       const locationExists = service.planPrices.some(
         (loc) => loc.state === state && loc.district === district
       );
 
       if (!locationExists) {
+        // Create plan entries with the service's original price
+        const planEntries = allPlans.map((plan) => ({
+          plan: plan._id,
+          planName: plan.name,
+          price: service.price || 0, // Use service's price or default to 0
+          _id: new mongoose.Types.ObjectId(),
+        }));
+
         const newLocationEntry = {
           state,
           district,
@@ -133,17 +67,65 @@ export const POST = async (req) => {
         };
       }
       return null;
-    }).filter(Boolean); // Remove nulls
+    }).filter(Boolean);
 
-    if (bulkOps.length > 0) {
-      await NewService.bulkWrite(bulkOps);
+    // 4. Update all service groups and their embedded services
+    const allServiceGroups = await ServiceGroup.find({});
+    const groupBulkOps = [];
+
+    for (const group of allServiceGroups) {
+      for (const service of group.services) {
+        const locationExists = service.planPrices.some(
+          (loc) => loc.state === state && loc.district === district
+        );
+
+        if (!locationExists) {
+          // Create plan entries with the service's original price
+          const planEntries = allPlans.map((plan) => ({
+            plan: plan._id,
+            planName: plan.name,
+            price: service.price || 0, // Use service's price or default to 0
+            _id: new mongoose.Types.ObjectId(),
+          }));
+
+          const newLocationEntry = {
+            state,
+            district,
+            plans: planEntries,
+            _id: new mongoose.Types.ObjectId(),
+          };
+
+          groupBulkOps.push({
+            updateOne: {
+              filter: { 
+                _id: group._id,
+                "services._id": service._id 
+              },
+              update: {
+                $push: { "services.$.planPrices": newLocationEntry },
+                $inc: { __v: 1 },
+              },
+            },
+          });
+        }
+      }
+    }
+
+    // Execute all bulk operations
+    if (serviceBulkOps.length > 0) {
+      await NewService.bulkWrite(serviceBulkOps);
+    }
+
+    if (groupBulkOps.length > 0) {
+      await ServiceGroup.bulkWrite(groupBulkOps);
     }
 
     return new NextResponse(
       JSON.stringify({
-        message: 'Location added and applied to all services with all plans',
+        message: 'Location added and applied to all services and service groups with all plans',
         location: newLocation,
-        servicesUpdated: bulkOps.length,
+        servicesUpdated: serviceBulkOps.length,
+        serviceGroupsUpdated: groupBulkOps.length,
       }),
       {
         status: 201,

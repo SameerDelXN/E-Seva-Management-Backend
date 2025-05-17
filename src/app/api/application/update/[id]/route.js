@@ -473,12 +473,12 @@ export async function PUT(req, { params }) {
   const { id } = params;  
   console.log(id)
   const body = await req.json();
-  console.log(body)
-  const { initialStatus, staff, remark, remarkAuthorId,document } = body;
+  console.log("body = ",body)
+  const { initialStatus, staff, remark, remarkAuthorId,document,delivery,receipt } = body;
   try {
     const updatedApp = await Application.findByIdAndUpdate(
       id,
-      { initialStatus, staff,document },
+      { initialStatus, staff,document,delivery,receipt },
       { new: true }
     );
     console.log(updatedApp)

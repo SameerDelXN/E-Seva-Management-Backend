@@ -16,7 +16,6 @@ export const GET = withCors(async () => {
   try {
     await connectDB();
     const applications = await Application.find({});
-    console.log(applications)
     return NextResponse.json(applications, { status: 200 });
   } catch (error) {
     console.error("Error fetching applications:", error);
