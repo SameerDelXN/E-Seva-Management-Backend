@@ -65,7 +65,7 @@ export async function POST(request) {
       requestBody: {
         name: file.name,
         mimeType: file.type,
-        parents: [process.env.GOOGLE_DRIVE_FOLDER_ID],
+        parents: ["1ORxsqlEAu_R7cMTthvPV8QPgtRtddNX6"],
       },
       media: {
         mimeType: file.type,
