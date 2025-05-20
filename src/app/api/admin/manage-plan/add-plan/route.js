@@ -78,13 +78,13 @@ export async function POST(req) {
       // Create a map of existing locations for quick lookup
       const locationMap = new Map();
       service.planPrices.forEach(locPrice => {
-        const key = `${locPrice.state}|${locPrice.district}`;
+        const key = `${locPrice.district}|${locPrice.subdistrict}`;
         locationMap.set(key, locPrice);
       });
 
       // Process all locations
       const updatedPlanPrices = locations.map(location => {
-        const key = `${location.state}|${location.district}`;
+        const key = `${location.district}|${location.subdistrict}`;
         
         if (locationMap.has(key)) {
           // Location exists - check if plan exists
@@ -101,8 +101,8 @@ export async function POST(req) {
         } else {
           // New location - create full entry
           return {
-            state: location.state,
             district: location.district,
+            subdistrict: location.subdistrict,
             plans: [{ ...newPlanEntry }],
             _id: new mongoose.Types.ObjectId()
           };

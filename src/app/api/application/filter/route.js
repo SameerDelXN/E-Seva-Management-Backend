@@ -25,7 +25,7 @@ export const GET = withCors(async (request) => {
 
     await connectDB();
     const applications = await Application.find({ 
-  location: { $regex: location, $options: 'i' } 
+   "location.district": { $regex: location, $options: 'i' } 
 });
     
     return NextResponse.json(applications, { status: 200 });

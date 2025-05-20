@@ -73,15 +73,16 @@ export async function POST(request) {
         }
       );
     }
-
+console.log(body);
     // Create the new service with service group reference
     const newService = new NewService({
       name: body.name,
       document: body.document,
       visibility: body.visibility,
       formData:[],
-      availablity: body.availablity,
+      // availablity: body.availablity,
       price: body.price || 0,
+      ExpectedDays:body.ExpectedDays,
       planPrices: body.planPrices || [],
       status: body.status || [],
       serviceGroup: {
@@ -99,6 +100,7 @@ export async function POST(request) {
       serviceId: savedService._id.toString(),  // Store as string to preserve exact ID
       name: savedService.name,
       price:savedService.price,
+      ExpectedDays: savedService.ExpectedDays,  
       status: body.status || [],
       documentNames: savedService.document,
       planPrices: savedService.planPrices || [],

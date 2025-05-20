@@ -9,7 +9,7 @@ export const GET = async () => {
     await dbConnect();
     
     // Fetch all locations
-    const locations = await Location.find().select('district state');
+    const locations = await Location.find().select('subdistrict district');
     
     // Fetch all plans
     const plans = await Plan.find().select('name duration price');

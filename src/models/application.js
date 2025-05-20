@@ -114,7 +114,10 @@ const applicationSchema = new mongoose.Schema({
   }],
   date: { type: Date },
   delivery: { type: String },
-  location:{type:String},
+  location:{
+    district:{type:String},
+    subdistrict:{type:String}
+  },
   status: [
     {
       name: { type: String },
@@ -160,6 +163,12 @@ const applicationSchema = new mongoose.Schema({
       inputType:{type:String},
       label:{type:String},
       value:{type:String}
+    }
+  ],
+  formData:[
+    {
+      label:{type:String},
+      price:{type:Number},
     }
   ]
 }, { timestamps: true });

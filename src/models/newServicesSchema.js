@@ -3,25 +3,33 @@ const newServicesSchema = new mongoose.Schema({
   name: { type: String, required: true },
   document: [{ type: String, required: true }],
   visibility: { type: String, required: true, default: "both" },
-  availablity: { type: String, required: true, default: "subscription" },
-  price: { type: Number, required: true, default: 0 },
+  availablity: { type: String,  },
+  price: {
+    commissionFee : {type:Number},
+    governmentFee : {type:Number},
+    TotalFee : {type:Number}
+   },
   
   // Add reference to service group
   serviceGroup: { 
     id: { type: mongoose.Schema.Types.ObjectId, ref: "ServiceGroup" },
     name: { type: String }
   },
-  
+  ExpectedDays:{type:Number},
   // Prices for each plan in each location
   planPrices: [
     {
+      subdistrict: { type: String },
       district: { type: String },
-      state: { type: String },
       plans: [
         {
           plan: { type: mongoose.Schema.Types.ObjectId, ref: "Plan" },
           planName: { type: String },
-          price: { type: Number, default: 0 }
+          price: {
+    commissionFee : {type:Number,default:0},
+    governmentFee : {type:Number,default:0},
+    TotalFee : {type:Number,default:0},
+   },
         }
       ]
     }

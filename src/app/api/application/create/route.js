@@ -111,6 +111,7 @@ export async function POST(request) {
       receipt: body.receipt || [],
       additional: body.additional || [],
       initialStatus: body.initialStatus,
+      formData:body.selectedOptions,
       service: {
         id: service._id,
         name: service.name,
@@ -122,8 +123,8 @@ export async function POST(request) {
 
     // Save the application to database
     const savedApplication = await newApplication.save();
-       agent.wallet -= body.amount;
-    await agent.save();
+        agent.wallet -= body.amount;
+     await agent.save();
 
     // Create notifications for admin and staff-manager
     const notificationTitle = `New Application Created`;

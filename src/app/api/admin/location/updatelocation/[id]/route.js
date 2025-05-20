@@ -24,9 +24,9 @@ export async function PUT(req, { params }) {
       );
     }
 
-    const { district, state } = await req.json();
+    const { subdistrict, district } = await req.json();
 
-    if (!district || !state) {
+    if (!subdistrict || !district) {
       return new NextResponse(
         JSON.stringify({ message: 'Both district and state are required' }),
         {
@@ -55,20 +55,20 @@ export async function PUT(req, { params }) {
     }
 
     // Store old values before updating
+    const oldSubDistrict = location.subdistrict;
     const oldDistrict = location.district;
-    const oldState = location.state;
 
     // Update location document
+    location.subdistrict = subdistrict;
     location.district = district;
-    location.state = state;
     await location.save();
 
     // Update location in all services
     const allServices = await NewService.find({
       "planPrices": {
         $elemMatch: {
-          "state": oldState,
-          "district": oldDistrict
+          "oldDistrict": oldDistrict,
+          "subdistrict": oldSubDistrict
         }
       }
     });
@@ -78,19 +78,19 @@ export async function PUT(req, { params }) {
         updateOne: {
           filter: { 
             _id: service._id,
-            "planPrices.state": oldState,
-            "planPrices.district": oldDistrict
+            "planPrices.oldDistrict": oldDistrict,
+            "planPrices.subdistrict": oldSubDistrict
           },
           update: {
             $set: {
-              "planPrices.$[elem].state": state,
-              "planPrices.$[elem].district": district
+              "planPrices.$[elem].district": district,
+              "planPrices.$[elem].subdistrict": subdistrict
             },
             $inc: { __v: 1 }
           },
           arrayFilters: [{ 
-            "elem.state": oldState, 
-            "elem.district": oldDistrict 
+            "elem.district": oldDistrict, 
+            "elem.subdistrict": oldSubDistrict 
           }]
         }
       };

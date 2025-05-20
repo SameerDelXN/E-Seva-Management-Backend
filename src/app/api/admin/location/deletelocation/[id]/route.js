@@ -39,7 +39,7 @@ export async function DELETE(req, { params }) {
       );
     }
     
-    const { district, state } = location;
+    const { subdistrict, district } = location;
     
     // Delete the location from Location collection
     await Location.findByIdAndDelete(id);
@@ -48,8 +48,8 @@ export async function DELETE(req, { params }) {
     const servicesWithLocation = await NewService.find({
       "planPrices": {
         $elemMatch: {
-          "state": state,
-          "district": district
+          "district": district,
+          "subdistrict": subdistrict
         }
       }
     });
@@ -66,8 +66,8 @@ export async function DELETE(req, { params }) {
             update: {
               $pull: {
                 "planPrices": {
-                  "state": state,
-                  "district": district
+                  "district": district,
+                  "subdistrict": subdistrict
                 }
               },
               $inc: { __v: 1 }

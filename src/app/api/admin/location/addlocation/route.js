@@ -11,11 +11,11 @@ export const POST = async (req) => {
     await dbConnect();
 
     const body = await req.json();
-    const { district, state } = body;
+    const { subdistrict, district } = body;
 
-    if (!district || !state) {
+    if (!subdistrict || !district) {
       return new NextResponse(
-        JSON.stringify({ message: 'District and State are required' }),
+        JSON.stringify({ message: 'Sub District and district are required' }),
         {
           status: 400,
           headers: {
@@ -27,7 +27,7 @@ export const POST = async (req) => {
     }
 
     // 1. Add location to Location model
-    const newLocation = new Location({ district, state });
+    const newLocation = new Location({ subdistrict, district });
     await newLocation.save();
 
     // 2. Fetch all plans
@@ -37,7 +37,7 @@ export const POST = async (req) => {
     const allServices = await NewService.find({});
     const serviceBulkOps = allServices.map((service) => {
       const locationExists = service.planPrices.some(
-        (loc) => loc.state === state && loc.district === district
+        (loc) => loc.district === district && loc.subdistrict === subdistrict
       );
 
       if (!locationExists) {
@@ -50,8 +50,8 @@ export const POST = async (req) => {
         }));
 
         const newLocationEntry = {
-          state,
           district,
+          subdistrict,
           plans: planEntries,
           _id: new mongoose.Types.ObjectId(),
         };
@@ -76,7 +76,7 @@ export const POST = async (req) => {
     for (const group of allServiceGroups) {
       for (const service of group.services) {
         const locationExists = service.planPrices.some(
-          (loc) => loc.state === state && loc.district === district
+          (loc) => loc.district === district && loc.subdistrict === subdistrict
         );
 
         if (!locationExists) {
@@ -89,8 +89,8 @@ export const POST = async (req) => {
           }));
 
           const newLocationEntry = {
-            state,
             district,
+            subdistrict,
             plans: planEntries,
             _id: new mongoose.Types.ObjectId(),
           };
