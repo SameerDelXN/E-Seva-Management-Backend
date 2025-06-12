@@ -69,7 +69,7 @@ export async function POST(req) {
         }
 
         // Create a new service group with services only if there are valid entries
-        const serviceGroupData = { name, image };
+        const serviceGroupData = { name, image ,visibility:true };
 
         // if (services && Array.isArray(services)) {
         //     // Filter out empty or invalid service entries

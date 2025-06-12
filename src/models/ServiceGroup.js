@@ -92,6 +92,8 @@ const ServiceSchema = new mongoose.Schema({
 const ServiceGroupSchema = new mongoose.Schema({
     name: { type: String, required: true,},
     image: { type: String, required: true },
+   visibility: { type: Boolean, default: true},
+
     services: [ServiceSchema]  // Embedded array of services with planPrices
 }, { timestamps: true });
 
